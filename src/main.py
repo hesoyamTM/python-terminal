@@ -1,5 +1,10 @@
-from src.power import power_function
-from src.constants import SAMPLE_CONSTANT
+from src.application.interfaces.termianal import TerminalInterface
+from src.application.terminal.parser import Parser
+from src.delivery.cli.cli import Cli
+from src.application.terminal.terminal import TerminalService
+from src.delivery.cli_interface import CliInterface
+from src.domain.commands.repository import HistoryRepository
+from src.adapters.commands.in_memory_repostory import InMemoryHistoryRepository
 
 
 def main() -> None:
@@ -8,13 +13,20 @@ def main() -> None:
     :return: Данная функция ничего не возвращает
     """
 
-    target, degree = map(int, input("Введите два числа разделенные пробелом: ").split(" "))
+    history_repository: HistoryRepository = InMemoryHistoryRepository()
+    cancelable_history_repository: HistoryRepository = InMemoryHistoryRepository()
 
-    result = power_function(target=target, power=degree)
+    parser: Parser = Parser()
+    terminal_service: TerminalInterface = TerminalService(
+        history_repository,
+        cancelable_history_repository,
+        parser,
+    )
 
-    print(result)
+    cli: CliInterface = Cli(terminal_service)
 
-    print(SAMPLE_CONSTANT)
+    cli.serve()
+
 
 if __name__ == "__main__":
     main()
