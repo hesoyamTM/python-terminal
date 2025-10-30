@@ -40,6 +40,18 @@ class TerminalService(TerminalInterface):
 
         return f"Command {command_name} not found"
 
+    def needs_confirmation(self, command) -> bool:
+        """
+        Returns True if needs confirmation
+        """
+
+        command_name, _, _ = self._parser.parse(command)
+
+        if command_name in COMMANDS:
+            return COMMANDS[command_name].needs_confirmation()
+
+        return False
+
     def get_current_directory(self) -> str:
         """
         Returns current directory

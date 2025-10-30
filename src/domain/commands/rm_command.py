@@ -11,12 +11,15 @@ class RmCommand(Command):
         if len(args) > 1:
             return ""
 
-        source_path = os.path.expanduser(args[0])
+        source_path = os.path.normpath(os.path.expanduser(args[0]))
 
         flag = "".join(flags)
 
         if os.path.isdir(source_path):
             if "r" in flag:
+                if source_path in os.path.normpath(current_directory):
+                    # TODO: return error message
+                    return ""
                 shutil.rmtree(source_path)
             else:
                 return ""
