@@ -8,6 +8,7 @@ from src.domain.commands.tar_command import TarCommand
 from src.domain.commands.zip_command import ZipCommand
 from src.domain.commands.unzip_command import UnzipCommand
 from src.domain.commands.untar_command import UntarCommand
+from src.domain.commands.grep_command import GrepCommand
 
 COMMANDS = {
     "ls": LsCommand(),
@@ -20,6 +21,7 @@ COMMANDS = {
     "unzip": UnzipCommand(),
     "tar": TarCommand(),
     "untar": UntarCommand(),
+    "grep": GrepCommand(),
 }
 
 MONTHS: list[str] = [
