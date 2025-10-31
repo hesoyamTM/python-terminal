@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 
 class HistoryRepository(ABC):
     """
-    History repository interface
+    History repository
     """
 
     @abstractmethod

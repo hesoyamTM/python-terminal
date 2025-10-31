@@ -1,4 +1,4 @@
-from src.domain.commands.command_interface import Command
+from src.application.interfaces.command import Command
 from typing import Iterator
 import os
 import re

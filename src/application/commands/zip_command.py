@@ -1,9 +1,9 @@
-from src.domain.commands.command_interface import Command
+from src.application.interfaces.command import Command
 import os
 import shutil
 
 
-class TarCommand(Command):
+class ZipCommand(Command):
     def do(self, current_directory: str, args: list[str], flags: list[str]) -> str:
         # TODO: check length of args
         if len(args) < 2:
@@ -15,7 +15,7 @@ class TarCommand(Command):
         destination_path = os.path.normpath(os.path.expanduser(args[1]))
 
         if os.path.isdir(source_path):
-            shutil.make_archive(destination_path, "tar", source_path)
+            shutil.make_archive(destination_path, "zip", source_path)
         else:
             # TODO: Error
             pass

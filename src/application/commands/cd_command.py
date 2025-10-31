@@ -1,19 +1,21 @@
-from src.domain.commands.command_interface import Command
+from src.application.interfaces.command import Command
 import os
-import shutil
 
 
-class UntarCommand(Command):
+class CdCommand(Command):
     def do(self, current_directory: str, args: list[str], flags: list[str]) -> str:
-        # TODO: check length of args
-        if len(args) < 1:
-            return ""
-        if len(args) > 1:
+        if len(args) == 0:
             return ""
 
-        source_path = os.path.normpath(os.path.expanduser(args[0]))
+        if len(args) == 1:
+            path = os.path.expanduser(args[0])
 
-        shutil.unpack_archive(source_path, format="tar")
+            # TODO: check if path is a directory
+            # if not os.path.exists(path):
+            #     return ""
+
+            os.chdir(path)
+            return ""
 
         return ""
 

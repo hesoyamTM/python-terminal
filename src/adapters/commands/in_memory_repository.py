@@ -1,4 +1,4 @@
-from src.domain.commands.repository import HistoryRepository
+from src.application.interfaces.history import HistoryRepository
 
 
 class InMemoryHistoryRepository(HistoryRepository):

@@ -1,30 +1,34 @@
-from src.domain.commands.command_interface import Command
+from src.application.interfaces.command import Command
 import os
 import shutil
 
 
-class CpCommand(Command):
+class RmCommand(Command):
     def do(self, current_directory: str, args: list[str], flags: list[str]) -> str:
         # TODO: check length of args
-        if len(args) < 2:
+        if len(args) < 1:
             return ""
-        if len(args) > 2:
+        if len(args) > 1:
             return ""
 
-        source_path = os.path.expanduser(args[0])
-        destination_path = os.path.expanduser(args[1])
+        source_path = os.path.normpath(os.path.expanduser(args[0]))
 
         flag = "".join(flags)
 
         if os.path.isdir(source_path):
             if "r" in flag:
-                shutil.copytree(source_path, destination_path)
-                return ""
+                if source_path in os.path.normpath(current_directory):
+                    # TODO: return error message
+                    return ""
+                shutil.rmtree(source_path)
             else:
-                # TODO: error
+                return ""
+        elif os.path.isfile(source_path):
+            if "f" in flag:
+                os.remove(source_path)
+            else:
                 return ""
 
-        shutil.copy(source_path, destination_path)
         return ""
 
     def undo(self, current_directory: str, args: list[str], flags: list[str]) -> str:
@@ -34,4 +38,4 @@ class CpCommand(Command):
         return True
 
     def needs_confirmation(self) -> bool:
-        return False
+        return True

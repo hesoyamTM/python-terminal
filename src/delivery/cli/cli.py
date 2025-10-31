@@ -1,4 +1,4 @@
-from src.application.interfaces.termianal import TerminalInterface
+from src.application.interfaces.terminal import TerminalInterface
 from src.delivery.cli_interface import CliInterface
 
 

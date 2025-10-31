@@ -1,10 +1,12 @@
-from src.application.interfaces.termianal import TerminalInterface
+from src.application.interfaces.terminal import TerminalInterface
 from src.application.terminal.parser import Parser
 from src.delivery.cli.cli import Cli
 from src.application.terminal.terminal import TerminalService
 from src.delivery.cli_interface import CliInterface
-from src.domain.commands.repository import HistoryRepository
-from src.adapters.commands.in_memory_repostory import InMemoryHistoryRepository
+from src.application.interfaces.history import HistoryRepository
+
+# from src.adapters.commands.in_memory_repostory import InMemoryHistoryRepository
+from src.adapters.commands.file_repository import FileHistoryRepository
 
 
 def main() -> None:
@@ -13,8 +15,8 @@ def main() -> None:
     :return: Данная функция ничего не возвращает
     """
 
-    history_repository: HistoryRepository = InMemoryHistoryRepository()
-    cancelable_history_repository: HistoryRepository = InMemoryHistoryRepository()
+    history_repository: HistoryRepository = FileHistoryRepository()
+    cancelable_history_repository: HistoryRepository = FileHistoryRepository()
 
     parser: Parser = Parser()
     terminal_service: TerminalInterface = TerminalService(

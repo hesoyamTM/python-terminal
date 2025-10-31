@@ -1,8 +1,21 @@
-from src.application.interfaces.termianal import TerminalInterface
-from src.domain.commands.repository import HistoryRepository
+from src.application.interfaces.terminal import TerminalInterface
+from src.application.interfaces.history import HistoryRepository
 from src.application.terminal.parser import Parser
-from src.constants import COMMANDS
+from src.application.interfaces.command import Command
 from os import getcwd
+
+from src.application.commands.cd_command import CdCommand
+from src.application.commands.cat_command import CatCommand
+from src.application.commands.cp_command import CpCommand
+from src.application.commands.grep_command import GrepCommand
+from src.application.commands.ls_command import LsCommand
+from src.application.commands.mv_command import MvCommand
+from src.application.commands.rm_command import RmCommand
+from src.application.commands.tar_command import TarCommand
+from src.application.commands.untar_command import UntarCommand
+from src.application.commands.unzip_command import UnzipCommand
+from src.application.commands.zip_command import ZipCommand
+from src.application.commands.history_command import HistoryCommand
 
 
 class TerminalService(TerminalInterface):
@@ -12,6 +25,7 @@ class TerminalService(TerminalInterface):
 
     _history_repository: HistoryRepository
     _cancelable_history_repository: HistoryRepository
+    _commands: dict[str, Command]
 
     _parser: Parser
 
@@ -25,6 +39,21 @@ class TerminalService(TerminalInterface):
         self._history_repository = history_repository
         self._parser = parser
 
+        self._commands = {
+            "cd": CdCommand(),
+            "cat": CatCommand(),
+            "cp": CpCommand(),
+            "grep": GrepCommand(),
+            "ls": LsCommand(),
+            "mv": MvCommand(),
+            "rm": RmCommand(),
+            "tar": TarCommand(),
+            "untar": UntarCommand(),
+            "unzip": UnzipCommand(),
+            "zip": ZipCommand(),
+            "history": HistoryCommand(history_repository),
+        }
+
     def execute(self, command: str) -> str:
         """
         Executes command
@@ -32,11 +61,15 @@ class TerminalService(TerminalInterface):
 
         command_name, args, flags = self._parser.parse(command)
 
-        if command_name in COMMANDS:
-            if COMMANDS[command_name].is_cancelable():
+        if command_name in self._commands:
+            cmd = self._commands[command_name]
+
+            if cmd.is_cancelable():
                 self._cancelable_history_repository.add(command)
 
-            return COMMANDS[command_name].do(getcwd(), args, flags)
+            self._history_repository.add(command)
+
+            return cmd.do(getcwd(), args, flags)
 
         return f"Command {command_name} not found"
 
@@ -47,8 +80,8 @@ class TerminalService(TerminalInterface):
 
         command_name, _, _ = self._parser.parse(command)
 
-        if command_name in COMMANDS:
-            return COMMANDS[command_name].needs_confirmation()
+        if command_name in self._commands:
+            return self._commands[command_name].needs_confirmation()
 
         return False
 
