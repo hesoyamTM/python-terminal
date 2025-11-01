@@ -1,4 +1,6 @@
 from abc import ABC, abstractmethod
+from typing import Tuple
+import uuid
 
 
 class HistoryRepository(ABC):
@@ -7,7 +9,7 @@ class HistoryRepository(ABC):
     """
 
     @abstractmethod
-    def add(self, command: str) -> None:
+    def add(self, id: uuid.UUID, command: str) -> None:
         """
         Add command to history
         """
@@ -21,7 +23,7 @@ class HistoryRepository(ABC):
         pass
 
     @abstractmethod
-    def pop(self) -> str:
+    def pop(self) -> Tuple[uuid.UUID, str]:
         """
         Pop command from history
         """

@@ -1,14 +1,29 @@
-cd srccd srchistorycd src
-cd src
-history
-cd src
-cd src
-ls -la
-history
-history
-historycd srccd srchistoryhistorycd ..cd ..ls -lahistoryhistoryhistory
-history
-history
-history
-history
-history
+132c8468-318b-49d8-9273-b1b4809b1120 ls -la
+b29b8b9e-d112-47ae-9732-ffc2f05f242f cp -r src 123
+b4fea91c-fe8d-4567-9cb6-91d9b93a43a7 rm -r 123
+04a3d0f2-c5ed-47f1-a91b-9c4278eedd08 undo
+a28a1df5-bc63-4d85-8748-d675c5f7a942 undo
+3dfccafb-ced2-454c-9d36-bb31ef959d47 ls -la
+a254f190-9310-4f06-9a9f-f080490b3efa cp -r src 123
+5b99b012-2dfd-4ca2-ad1b-da9035728483 rm -r 123
+d6cc5c15-ab26-478f-97ee-108014ad3f2f undo
+21abd5b3-dc24-4734-afdf-68aa19418107 cp -r src 12
+cabe2023-be0a-405f-9e42-b085e41a9d19 ls -la
+cf8196d5-4a50-4378-92e2-1aa681de6ca0 rm -r 12
+b95e0069-197c-4828-afcd-28c8f49cd858 ls -la
+aef92de7-13ec-48c0-b9ee-cb8130b5d65e undo
+46a357f2-19db-48b5-b61d-6957495e926f ls -la
+227d3088-41b0-48a1-b25d-a85a27c993e3 cp -r src 123
+766fc004-cecb-4ee6-a2c5-b78102f83d6b rm -r 123
+9b69335c-2f31-4799-90a3-8a156322740d undo
+411cd9c0-7a0f-41dc-afeb-6b50a8de09cc ls -la
+7f43f92d-00f2-4d7d-9978-092f3eb2bd01 undo
+4bba4179-569d-485b-a5f5-6b31c5269e79 cp -r src 123
+f24f4f0e-f610-49f1-bcc0-8c228100e0c0 cp .history 22
+4a2ae28f-8d6a-459c-a6a2-f6ce0fefeeb0 cat 22
+614241f4-59a0-45f8-81fd-35e29094fcd2 rm 22
+f533e7c1-01ba-453b-8269-72c148cfe859 undo
+f116dcbc-0936-418e-89c7-6cf08dd2a552 cat 22
+2b5d5262-6306-4fd0-90ba-12ddc3db417b undo
+93dc9d28-817e-4ef5-b852-3c4f060d2a65 ls -la
+0d4bc064-3458-49a6-bb4b-971985b2dc83 rm -r 123

@@ -1,4 +1,6 @@
 from src.application.interfaces.history import HistoryRepository
+import uuid
+from typing import Tuple
 
 
 class InMemoryHistoryRepository(HistoryRepository):
@@ -6,28 +8,29 @@ class InMemoryHistoryRepository(HistoryRepository):
     In-memory history repository
     """
 
-    _history: list[str]
+    _history: list[Tuple[uuid.UUID, str]]
 
     def __init__(self):
         """
         Initializes the history repository
         """
-        self._history: list[str] = []
+        self._history: list[Tuple[uuid.UUID, str]] = []
 
-    def add(self, command: str) -> None:
+    def add(self, id: uuid.UUID, command: str) -> None:
         """
         Add command to history
         """
-        self._history.append(command)
+        self._history.append((id, command))
 
     def get(self) -> list[str]:
         """
         Get history
         """
-        return self._history
+        return [command for _, command in self._history]
 
-    def pop(self) -> str:
+    def pop(self) -> Tuple[uuid.UUID, str]:
         """
-        Pop command from history
+        op command from history
         """
-        return self._history.pop()
+        id, command = self._history.pop()
+        return (id, command)

@@ -1,8 +1,11 @@
+from src.application.commands.undo_command import UndoCommand
 from src.application.interfaces.terminal import TerminalInterface
 from src.application.interfaces.history import HistoryRepository
+from src.application.interfaces.trash import TrashRepository
 from src.application.terminal.parser import Parser
 from src.application.interfaces.command import Command
 from os import getcwd
+import uuid
 
 from src.application.commands.cd_command import CdCommand
 from src.application.commands.cat_command import CatCommand
@@ -33,6 +36,7 @@ class TerminalService(TerminalInterface):
         self,
         history_repository: HistoryRepository,
         cancelable_history_repository: HistoryRepository,
+        trash_repository: TrashRepository,
         parser: Parser,
     ):
         self._cancelable_history_repository = cancelable_history_repository
@@ -46,13 +50,16 @@ class TerminalService(TerminalInterface):
             "grep": GrepCommand(),
             "ls": LsCommand(),
             "mv": MvCommand(),
-            "rm": RmCommand(),
+            "rm": RmCommand(trash_repository),
             "tar": TarCommand(),
             "untar": UntarCommand(),
             "unzip": UnzipCommand(),
             "zip": ZipCommand(),
             "history": HistoryCommand(history_repository),
         }
+        self._commands["undo"] = UndoCommand(
+            self._commands, cancelable_history_repository, parser
+        )
 
     def execute(self, command: str) -> str:
         """
@@ -63,13 +70,14 @@ class TerminalService(TerminalInterface):
 
         if command_name in self._commands:
             cmd = self._commands[command_name]
+            id = uuid.uuid4()
 
             if cmd.is_cancelable():
-                self._cancelable_history_repository.add(command)
+                self._cancelable_history_repository.add(id, command)
 
-            self._history_repository.add(command)
+            self._history_repository.add(id, command)
 
-            return cmd.do(getcwd(), args, flags)
+            return cmd.do(id, args, flags)
 
         return f"Command {command_name} not found"
 

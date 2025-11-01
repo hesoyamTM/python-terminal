@@ -7,14 +7,15 @@ import datetime
 import pwd
 import grp
 import src.constants as constants
+import uuid
 
 
 class LsCommand(Command):
-    def do(self, current_directory: str, args: list[str], flags: list[str]) -> str:
+    def do(self, id: uuid.UUID, args: list[str], flags: list[str]) -> str:
         res: str = ""
 
         if len(args) == 0:
-            args = [current_directory]
+            args = [os.getcwd()]
 
         if len(args) == 1:
             for file in self.get_files(args[0], flags):
@@ -84,7 +85,7 @@ class LsCommand(Command):
 
         return f"{file_type}{permissions} {stats.st_nlink} {user}  {group}  {stats.st_size} {last_modified} {file}"
 
-    def undo(self, current_directory: str, args: list[str], flags: list[str]) -> str:
+    def undo(self, id: uuid.UUID, args: list[str], flags: list[str]) -> str:
         return ""
 
     def is_cancelable(self) -> bool:

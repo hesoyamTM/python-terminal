@@ -1,13 +1,14 @@
 from abc import ABC, abstractmethod
+import uuid
 
 
 class Command(ABC):
     @abstractmethod
-    def do(self, current_directory: str, args: list[str], flags: list[str]) -> str:
+    def do(self, id: uuid.UUID, args: list[str], flags: list[str]) -> str:
         pass
 
     @abstractmethod
-    def undo(self, current_directory: str, args: list[str], flags: list[str]) -> str:
+    def undo(self, id: uuid.UUID, args: list[str], flags: list[str]) -> str:
         pass
 
     @abstractmethod

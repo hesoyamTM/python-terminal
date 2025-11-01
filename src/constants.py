@@ -14,4 +14,5 @@ MONTHS: list[str] = [
 ]
 
 HISTORY_FILE: str = ".history"
+CANCELABLE_HISTORY_FILE: str = ".cancelable_history"
 TRASH_FILE: str = ".trash"
