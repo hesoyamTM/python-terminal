@@ -1,10 +1,10 @@
 from src.application.commands.undo_command import UndoCommand
+from src.application.interfaces.environment import FileSystemEnvironment
 from src.application.interfaces.terminal import TerminalInterface
 from src.application.interfaces.history import HistoryRepository
 from src.application.interfaces.trash import TrashRepository
 from src.application.terminal.parser import Parser
 from src.application.interfaces.command import Command
-from os import getcwd
 import uuid
 
 from src.application.commands.cd_command import CdCommand
@@ -20,6 +20,8 @@ from src.application.commands.unzip_command import UnzipCommand
 from src.application.commands.zip_command import ZipCommand
 from src.application.commands.history_command import HistoryCommand
 
+import src.application.errors.commands as commands_errors
+
 
 class TerminalService(TerminalInterface):
     """
@@ -29,6 +31,7 @@ class TerminalService(TerminalInterface):
     _history_repository: HistoryRepository
     _cancelable_history_repository: HistoryRepository
     _commands: dict[str, Command]
+    _environment: FileSystemEnvironment
 
     _parser: Parser
 
@@ -37,16 +40,18 @@ class TerminalService(TerminalInterface):
         history_repository: HistoryRepository,
         cancelable_history_repository: HistoryRepository,
         trash_repository: TrashRepository,
+        environment: FileSystemEnvironment,
         parser: Parser,
     ):
         self._cancelable_history_repository = cancelable_history_repository
         self._history_repository = history_repository
         self._parser = parser
+        self._environment = environment
 
         self._commands = {
-            "cd": CdCommand(),
-            "cat": CatCommand(),
-            "cp": CpCommand(),
+            "cd": CdCommand(environment),
+            "cat": CatCommand(environment),
+            "cp": CpCommand(environment),
             "grep": GrepCommand(),
             "ls": LsCommand(),
             "mv": MvCommand(),
@@ -79,7 +84,7 @@ class TerminalService(TerminalInterface):
 
             return cmd.do(id, args, flags)
 
-        return f"Command {command_name} not found"
+        raise commands_errors.CommandNotFoundError(command_name)
 
     def needs_confirmation(self, command) -> bool:
         """
@@ -97,4 +102,4 @@ class TerminalService(TerminalInterface):
         """
         Returns current directory
         """
-        return getcwd()
+        return self._environment.get_current_directory()

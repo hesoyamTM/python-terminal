@@ -1,25 +1,33 @@
 from src.application.interfaces.command import Command
+import src.application.errors.commands as errors
 import os
 import shutil
 import uuid
 
 
 class CpCommand(Command):
+    """
+    cp [-r] <source> <destination>
+    """
+
+    def __init__(self, environment):
+        """
+        :param environment: FileSystemEnvironment
+        """
+        self.environment = environment
+
     def do(self, id: uuid.UUID, args: list[str], flags: list[str]) -> str:
-        # TODO: check length of args
-        if len(args) < 2:
-            return ""
-        if len(args) > 2:
-            return ""
+        if len(args) != 2:
+            raise errors.ArgumentError("cp requires exactly two arguments")
 
         source_path = os.path.expanduser(args[0])
         destination_path = os.path.expanduser(args[1])
 
         flag = "".join(flags)
 
-        if os.path.isdir(source_path):
+        if self.environment.is_directory(source_path):
             if "r" in flag:
-                shutil.copytree(source_path, destination_path)
+                self.environment.copy_directory(source_path, destination_path)
                 return ""
             else:
                 # TODO: error
