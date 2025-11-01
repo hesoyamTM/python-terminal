@@ -28,3 +28,7 @@ class DirectoryAlreadyExistsError(DirectoryError):
 
 class DirectoryIsAFileError(DirectoryError):
     pass
+
+
+class PermissionError(Exception):
+    pass

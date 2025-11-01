@@ -1,20 +1,37 @@
 from src.application.interfaces.command import Command
 from typing import Iterator
-import os
+from src.application.interfaces.environment import FileSystemEnvironment
 import re
 import uuid
+import os
 
 
 class GrepCommand(Command):
+    """
+    grep [-ir] <pattern> <file>
+    """
+
+    def __init__(self, env: FileSystemEnvironment):
+        """
+        :param env: FileSystemEnvironment
+        """
+        self.env = env
+        pass
+
     def do(self, id: uuid.UUID, args: list[str], flags: list[str]) -> str:
-        # TODO: check length of args
-        if len(args) < 2:
-            return ""
-        if len(args) > 2:
-            return ""
+        """
+        Executes the command
+        :param id: uuid.UUID
+        :param args: list[str]
+        :param flags: list[str]
+        :return: str
+        """
+
+        if len(args) != 2:
+            raise ValueError("grep requires exactly two arguments")
 
         pattern = args[0]
-        source_path = os.path.normpath(os.path.expanduser(args[1]))
+        source_path = self.env.normalize_path(args[1])
 
         flag = "".join(flags)
         ignore_case = "i" in flag
@@ -30,15 +47,22 @@ class GrepCommand(Command):
     def grep_file(
         self, pattern: str, file_path: str, ignore_case=False
     ) -> Iterator[str]:
+        """
+        Find pattern in file
+        :param pattern: str
+        :param file_path: str
+        :param ignore_case: bool
+        :return: Iterator[str]
+        """
+
         compiled_pattern = re.compile(pattern)
 
         try:
-            with open(file_path, "r", encoding="utf-8") as file:
-                for i, line in enumerate(file):
-                    for match in compiled_pattern.finditer(
-                        line, re.IGNORECASE if ignore_case else 0
-                    ):
-                        yield f"{file_path}: {i}:{match.start()}: {self.colorize_match(line, match)}"
+            for i, line in enumerate(self.env.read_lines(file_path)):
+                for match in compiled_pattern.finditer(
+                    line, re.IGNORECASE if ignore_case else 0
+                ):
+                    yield f"{file_path}: {i}:{match.start()}: {self.colorize_match(line, match)}"
         except UnicodeDecodeError:
             return
 
@@ -49,11 +73,11 @@ class GrepCommand(Command):
 
         while queue:
             current_path = queue.pop(0)
-            for file in os.listdir(current_path):
+            for file in self.env.get_directory_list(current_path):
                 file_path = os.path.join(current_path, file)
-                if os.path.isfile(file_path):
+                if self.env.is_file(file_path):
                     yield from self.grep_file(pattern, file_path, ignore_case)
-                elif os.path.isdir(file_path):
+                elif self.env.is_directory(file_path):
                     queue.append(file_path)
 
     def colorize_match(self, line: str, match: re.Match[str]) -> str:

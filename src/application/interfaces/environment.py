@@ -1,9 +1,14 @@
 from abc import ABC, abstractmethod
+from typing import Iterator
 
 
 class FileSystemEnvironment(ABC):
     @abstractmethod
     def read_file(self, file_path: str) -> str:
+        pass
+
+    @abstractmethod
+    def read_lines(self, file_path: str) -> Iterator[str]:
         pass
 
     @abstractmethod
@@ -60,4 +65,32 @@ class FileSystemEnvironment(ABC):
 
     @abstractmethod
     def copy_directory(self, source_path: str, destination_path: str) -> None:
+        pass
+
+    @abstractmethod
+    def copy_file(self, source_path: str, destination_path: str) -> None:
+        pass
+
+    @abstractmethod
+    def normalize_path(self, path: str) -> str:
+        pass
+
+    @abstractmethod
+    def get_file_info(self, dir_path: str, file: str) -> str:
+        pass
+
+    @abstractmethod
+    def move(self, source_path: str, destination_path: str) -> None:
+        pass
+
+    @abstractmethod
+    def make_archive(
+        self, source_path: str, destination_path: str, format: str
+    ) -> None:
+        pass
+
+    @abstractmethod
+    def extract_archive(
+        self, source_path: str, destination_path: str, format: str
+    ) -> None:
         pass

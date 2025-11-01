@@ -78,3 +78,7 @@ class Cli(CliInterface):
             except file_errors.DirectoryIsAFileError as e:
                 logger.error(e)
                 print("Directory is a file")
+
+            except file_errors.PermissionError as e:
+                logger.error(e)
+                print("Permission denied")

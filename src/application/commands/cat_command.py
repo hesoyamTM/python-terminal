@@ -1,7 +1,7 @@
 from src.application.interfaces.command import Command
 from src.application.errors.commands import ArgumentError
 import uuid
-import src.application.errors.file as errors
+# import src.application.errors.file as errors
 
 
 class CatCommand(Command):
@@ -26,12 +26,9 @@ class CatCommand(Command):
         if len(args) != 1:
             raise ArgumentError("cat requires exactly one argument")
 
-        file: str = args[0]
+        file: str = self.environment.normalize_path(args[0])
 
-        try:
-            content: str = self.environment.read_file(file)
-        except FileNotFoundError:
-            raise errors.FileNotFoundError(file)
+        content: str = self.environment.read_file(file)
 
         return content
 

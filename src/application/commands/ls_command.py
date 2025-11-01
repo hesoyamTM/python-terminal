@@ -1,21 +1,34 @@
 from typing import Iterator
 from src.application.interfaces.command import Command
-import os
-import stat
-import pathlib
-import datetime
-import pwd
-import grp
-import src.constants as constants
+from src.application.interfaces.environment import FileSystemEnvironment
+
+# from src.application.errors.commands import ArgumentError
 import uuid
 
 
 class LsCommand(Command):
+    """
+    ls [-a] [-l] [path...]
+    """
+
+    def __init__(self, env: FileSystemEnvironment):
+        """
+        :param env: FileSystemEnvironment
+        """
+        self.env = env
+
     def do(self, id: uuid.UUID, args: list[str], flags: list[str]) -> str:
+        """
+        Executes the command
+        :param id: uuid.UUID
+        :param args: list[str]
+        :param flags: list[str]
+        :return: str
+        """
         res: str = ""
 
         if len(args) == 0:
-            args = [os.getcwd()]
+            args = [self.env.get_current_directory()]
 
         if len(args) == 1:
             for file in self.get_files(args[0], flags):
@@ -33,57 +46,17 @@ class LsCommand(Command):
         return res
 
     def get_files(self, arg: str, flags: list[str]) -> Iterator[str]:
-        path = os.path.expanduser(arg)
-        # TODO: check if path is a directory
-        # if not os.path.exists(path):
-        #     return
+        path = self.env.normalize_path(arg)
 
         flag: str = "".join(flags)
 
-        for file in sorted(os.listdir(path) + ["."] + [".."]):
+        for file in sorted(self.env.get_directory_list(path) + ["."] + [".."]):
             if file.startswith(".") and "a" not in flag:
                 continue
             if "l" in flag:
-                yield self.get_file_info(path, file)
+                yield self.env.get_file_info(path, file)
             else:
                 yield file
-
-    def get_file_info(self, dir_path: str, file: str) -> str:
-        file_path: str = os.path.join(dir_path, file)
-        path: pathlib.Path = pathlib.Path(file_path)
-        stats: os.stat_result = os.stat(file_path)
-
-        file_type: str
-        if path.is_symlink():
-            file_type = "l"
-        elif path.is_dir():
-            file_type = "d"
-        else:
-            file_type = "-"
-
-        mode: int = stats.st_mode
-        permissions = (
-            ("r" if mode & stat.S_IRUSR else "-")
-            + ("w" if mode & stat.S_IWUSR else "-")
-            + ("x" if mode & stat.S_IXUSR else "-")
-            + ("r" if mode & stat.S_IRGRP else "-")
-            + ("w" if mode & stat.S_IWGRP else "-")
-            + ("x" if mode & stat.S_IXGRP else "-")
-            + ("r" if mode & stat.S_IROTH else "-")
-            + ("w" if mode & stat.S_IWOTH else "-")
-            + ("x" if mode & stat.S_IXOTH else "-")
-        )
-
-        user: str = pwd.getpwuid(stats.st_uid).pw_name
-        group: str = grp.getgrgid(stats.st_gid).gr_name
-
-        last_modified_date: datetime.datetime = datetime.datetime.fromtimestamp(
-            stats.st_mtime
-        )
-
-        last_modified: str = f"{last_modified_date.day:02d} {constants.MONTHS[last_modified_date.month - 1]}.  {last_modified_date.hour:02d}:{last_modified_date.minute:02d}"
-
-        return f"{file_type}{permissions} {stats.st_nlink} {user}  {group}  {stats.st_size} {last_modified} {file}"
 
     def undo(self, id: uuid.UUID, args: list[str], flags: list[str]) -> str:
         return ""

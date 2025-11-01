@@ -29,3 +29,20 @@ f116dcbc-0936-418e-89c7-6cf08dd2a552 cat 22
 0d4bc064-3458-49a6-bb4b-971985b2dc83 rm -r 123
 d0f31211-ac75-4e4d-a549-aab7ed6cbad1 cat 12
 831e58c2-6c33-4e04-94a5-6086e6fad3b4 cat 123
+b4e5d97b-6adf-4003-9118-b205d2faa29c ls -la
+43b4d09b-7c37-4146-a99b-ca3618759862 zip .history 123
+391f24ae-d0ae-4745-a0a0-f48bead298f3 ls -la
+03fdea4e-1e8c-4f37-b725-2fdc0760a66a rm 123.zip
+268db55a-9d1c-4372-bc1b-45cf279540f9 ls -la
+a74ef3fe-6bdc-4814-a767-b4d478df968e undo
+e645543b-ea1d-4397-b623-de7a9ffd01d8 ls -la
+50beb7fa-cf0c-4bd1-8b61-c27b2c9317e2 rm 123.zip
+69295657-ec4f-41ce-aae3-9cb20acdae80 cp -r src src2
+eaa9585c-1d2c-42e8-9c12-198b8161cab4 cp -r src src2
+7917d416-f35c-447c-83bc-d5db1c7bdba1 cp -r src src2
+8e74fffc-2632-4816-9a20-680c7fa843fa cp -r src src3
+388aa1dd-4c92-4b4c-9851-b132e669ab13 mv src2 src3
+9eec111e-27e3-401b-9a42-86a382399efa cp src src2
+e6184608-6308-495b-a681-00aee71b2250 cp -r src src2
+a9ff61c5-966a-484b-ae8f-288e0edf8219 cp -r src src3
+dc3b9be3-f035-47ac-8cfe-c0afb54e8427 mv src2 src3

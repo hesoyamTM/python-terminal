@@ -1,28 +1,35 @@
 from src.application.interfaces.command import Command
-import os
-import shutil
+from src.application.interfaces.environment import FileSystemEnvironment
+from src.application.errors.commands import ArgumentError
 import uuid
 
 
 class MvCommand(Command):
+    """
+    mv <source> <destination>
+    """
+
+    def __init__(self, env: FileSystemEnvironment):
+        """
+        :param environment: FileSystemEnvironment
+        """
+        self.env = env
+
     def do(self, id: uuid.UUID, args: list[str], flags: list[str]) -> str:
-        # TODO: check length of args
-        if len(args) < 2:
-            return ""
-        if len(args) > 2:
-            return ""
+        if len(args) != 2:
+            raise ArgumentError("mv requires exactly two arguments")
 
-        source_path = os.path.expanduser(args[0])
-        destination_path = os.path.expanduser(args[1])
+        source_path = self.env.normalize_path(args[0])
+        destination_path = self.env.normalize_path(args[1])
 
-        shutil.move(source_path, destination_path)
+        self.env.move(source_path, destination_path)
         return ""
 
     def undo(self, id: uuid.UUID, args: list[str], flags: list[str]) -> str:
-        source_path = os.path.expanduser(args[0])
-        destination_path = os.path.expanduser(args[1])
+        source_path = self.env.normalize_path(args[0])
+        destination_path = self.env.normalize_path(args[1])
 
-        shutil.move(destination_path, source_path)
+        self.env.move(destination_path, source_path)
 
         return ""
 

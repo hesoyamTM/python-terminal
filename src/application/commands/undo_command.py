@@ -1,11 +1,18 @@
 from src.application.interfaces.command import Command
 from src.application.interfaces.history import HistoryRepository
+
+# from src.application.interfaces.environment import FileSystemEnvironment
+from src.application.errors.commands import ArgumentError
 import uuid
 
 from src.application.terminal.parser import Parser
 
 
 class UndoCommand(Command):
+    """
+    undo
+    """
+
     _commands: dict[str, Command] = {}
     _history_repository: HistoryRepository
     _parser: Parser
@@ -21,6 +28,9 @@ class UndoCommand(Command):
         self._parser = parser
 
     def do(self, id: uuid.UUID, args: list[str], flags: list[str]) -> str:
+        if len(args) != 0:
+            raise ArgumentError("undo requires no arguments")
+
         cmd_id, cmd = self._history_repository.pop()
 
         command_name, args, flags = self._parser.parse(cmd)

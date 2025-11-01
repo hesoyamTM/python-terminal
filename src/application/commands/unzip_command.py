@@ -1,20 +1,27 @@
 from src.application.interfaces.command import Command
-import os
-import shutil
+from src.application.interfaces.environment import FileSystemEnvironment
+from src.application.errors.commands import ArgumentError
 import uuid
 
 
 class UnzipCommand(Command):
+    """
+    unzip <file>
+    """
+
+    def __init__(self, env: FileSystemEnvironment):
+        """
+        :param env: FileSystemEnvironment
+        """
+        self.env = env
+
     def do(self, id: uuid.UUID, args: list[str], flags: list[str]) -> str:
-        # TODO: check length of args
-        if len(args) < 1:
-            return ""
-        if len(args) > 1:
-            return ""
+        if len(args) != 1:
+            raise ArgumentError("unzip requires exactly one argument")
 
-        source_path = os.path.normpath(os.path.expanduser(args[0]))
+        source_path = self.env.normalize_path(args[0])
 
-        shutil.unpack_archive(source_path, format="zip")
+        self.env.extract_archive(source_path, self.env.get_current_directory(), "zip")
 
         return ""
 

@@ -1,6 +1,5 @@
 from src.application.interfaces.command import Command
 from src.application.errors.commands import ArgumentError
-import os
 import uuid
 
 
@@ -27,9 +26,9 @@ class CdCommand(Command):
         if len(args) != 1:
             raise ArgumentError("cd requires exactly one argument")
 
-        path = os.path.expanduser(args[0])
+        path = self.environment.normalize_path(args[0])
 
-        os.chdir(path)
+        self.environment.change_directory(path)
 
         return ""
 
