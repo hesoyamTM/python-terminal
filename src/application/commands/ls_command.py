@@ -43,7 +43,7 @@ class LsCommand(Command):
             for file in self.get_files(path, flags):
                 res += f"{file}\n"
 
-        return res
+        return res[:-1]
 
     def get_files(self, arg: str, flags: list[str]) -> Iterator[str]:
         path = self.env.normalize_path(arg)
@@ -53,10 +53,14 @@ class LsCommand(Command):
         for file in sorted(self.env.get_directory_list(path) + ["."] + [".."]):
             if file.startswith(".") and "a" not in flag:
                 continue
-            if "l" in flag:
-                yield self.env.get_file_info(path, file)
-            else:
-                yield file
+
+            try:
+                if "l" in flag:
+                    yield self.env.get_file_info(path, file)
+                else:
+                    yield file
+            except StopIteration:
+                return
 
     def undo(self, id: uuid.UUID, args: list[str], flags: list[str]) -> str:
         return ""

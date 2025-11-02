@@ -40,10 +40,10 @@ def test_cat_undo():
 def test_cat_is_cancelable():
     env = Mock()
     cat_command = CatCommand(env)
-    assert cat_command.is_cancelable()
+    assert not cat_command.is_cancelable()
 
 
 def test_cat_needs_confirmation():
     env = Mock()
     cat_command = CatCommand(env)
-    assert cat_command.needs_confirmation()
+    assert not cat_command.needs_confirmation()

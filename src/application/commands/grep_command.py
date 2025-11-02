@@ -1,6 +1,8 @@
 from src.application.interfaces.command import Command
+from src.application.errors.file import FileIsADirectoryError
 from typing import Iterator
 from src.application.interfaces.environment import FileSystemEnvironment
+from src.application.errors.commands import ArgumentError
 import re
 import uuid
 import os
@@ -28,7 +30,7 @@ class GrepCommand(Command):
         """
 
         if len(args) != 2:
-            raise ValueError("grep requires exactly two arguments")
+            raise ArgumentError("grep requires exactly two arguments")
 
         pattern = args[0]
         source_path = self.env.normalize_path(args[1])
@@ -37,8 +39,11 @@ class GrepCommand(Command):
         ignore_case = "i" in flag
         res: str = ""
 
-        if "r" in flag:
-            res = "\n".join(self.grep_directory(pattern, source_path, ignore_case))
+        if self.env.is_directory(source_path):
+            if "r" in flag:
+                res = "\n".join(self.grep_directory(pattern, source_path, ignore_case))
+            else:
+                raise FileIsADirectoryError(source_path)
         else:
             res = "\n".join(self.grep_file(pattern, source_path, ignore_case))
 
@@ -55,14 +60,12 @@ class GrepCommand(Command):
         :return: Iterator[str]
         """
 
-        compiled_pattern = re.compile(pattern)
+        compiled_pattern = re.compile(pattern, re.IGNORECASE if ignore_case else 0)
 
         try:
             for i, line in enumerate(self.env.read_lines(file_path)):
-                for match in compiled_pattern.finditer(
-                    line, re.IGNORECASE if ignore_case else 0
-                ):
-                    yield f"{file_path}: {i}:{match.start()}: {self.colorize_match(line, match)}"
+                for match in compiled_pattern.finditer(line):
+                    yield f"{file_path}: {i + 1}:{match.start()}: {self.colorize_match(line, match)}"
         except UnicodeDecodeError:
             return
 

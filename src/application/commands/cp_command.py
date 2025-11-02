@@ -30,7 +30,7 @@ class CpCommand(Command):
                 self.environment.copy_directory(source_path, destination_path)
                 return ""
             else:
-                raise files_errors.DirectoryIsAFileError(source_path)
+                raise files_errors.FileIsADirectoryError(source_path)
         else:
             self.environment.copy_file(source_path, destination_path)
             return ""

@@ -46,3 +46,7 @@ eaa9585c-1d2c-42e8-9c12-198b8161cab4 cp -r src src2
 e6184608-6308-495b-a681-00aee71b2250 cp -r src src2
 a9ff61c5-966a-484b-ae8f-288e0edf8219 cp -r src src3
 dc3b9be3-f035-47ac-8cfe-c0afb54e8427 mv src2 src3
+7658dbef-5898-4f54-a152-a549384447f7 cd ..
+f40ef151-0c74-4a40-acf1-162819c3e07b ls
+ad4ff2f5-c541-459b-98b1-2c4549d3429f ls -la .
+1d2fac0e-d4f7-48aa-9816-3ec0e5dd371a ls . ..
