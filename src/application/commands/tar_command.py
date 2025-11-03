@@ -27,7 +27,7 @@ class TarCommand(Command):
         else:
             self.env.create_directory(destination_path)
             self.env.copy_file(source_path, destination_path)
-            self.env.make_archive(destination_path, destination_path, "zip")
+            self.env.make_archive(destination_path, destination_path, "tar")
             self.env.delete_directory(destination_path)
 
         return ""
