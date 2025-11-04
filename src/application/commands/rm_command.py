@@ -1,6 +1,11 @@
 from src.application.interfaces.command import Command
 from src.application.interfaces.trash import TrashRepository
 from src.application.interfaces.environment import FileSystemEnvironment
+from src.application.errors.file import (
+    FileError,
+    DirectoryIsAFileError,
+)
+from src.application.errors.commands import ArgumentError
 from os import path as os_path
 import uuid
 
@@ -17,11 +22,8 @@ class RmCommand(Command):
         self.env = env
 
     def do(self, id: uuid.UUID, args: list[str], flags: list[str]) -> str:
-        # TODO: check length of args
-        if len(args) < 1:
-            return ""
-        if len(args) > 1:
-            return ""
+        if len(args) != 1:
+            raise ArgumentError("rm command requires one argument")
 
         source_path = self.env.normalize_path(args[0])
 
@@ -30,20 +32,16 @@ class RmCommand(Command):
         if self.env.is_directory(source_path):
             if "r" in flag:
                 if source_path in self.env.get_current_directory():
-                    # TODO: return error message
-                    return ""
+                    raise FileError("Cannot remove current directory")
                 self._add_dir_to_trash(id, source_path)
                 self.env.delete_directory(source_path)
             else:
-                return ""
+                raise DirectoryIsAFileError(source_path)
         elif self.env.is_file(source_path):
-            if "f" in flag:
-                self._trash_repository.add(
-                    id, {source_path: self.env.read_hex_file(source_path)}
-                )
-                self.env.delete_file(source_path)
-            else:
-                return ""
+            self._trash_repository.add(
+                id, {source_path: self.env.read_hex_file(source_path)}
+            )
+            self.env.delete_file(source_path)
 
         return ""
 
@@ -66,8 +64,7 @@ class RmCommand(Command):
             file_path = os_path.join(path, file_path)
 
             if isinstance(file_info, str):
-                with open(file_path, "wb") as file:
-                    file.write(bytes.fromhex(file_info))
+                self.env.write_hex_file(file_path, file_info)
             else:
                 self.env.create_directory(file_path)
                 self._create_file_tree(file_path, file_info)
@@ -92,8 +89,8 @@ class RmCommand(Command):
     def _add_dir_tree(self, tree: dict, path: str) -> None:
         for file in self.env.get_directory_list(path):
             file_path = os_path.join(path, file)
-            if os_path.isfile(file_path):
+            if self.env.is_file(file_path):
                 tree[file] = self.env.read_hex_file(file_path)
-            elif os_path.isdir(file_path):
+            else:
                 tree[file] = {}
                 self._add_dir_tree(tree[file], file_path)
